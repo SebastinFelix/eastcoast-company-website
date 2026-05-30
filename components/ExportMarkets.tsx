@@ -109,7 +109,7 @@ export default function ExportMarkets() {
   const active = regions.find((r) => r.id === activeRegion) ?? regions[0];
 
   return (
-    <section id="export" className="section-padding bg-brand-bg-alt overflow-hidden" ref={ref}>
+    <section id="export" className="section-padding bg-white overflow-hidden" ref={ref}>
       <div className="container-brand">
         {/* Header */}
         <div className="mb-12 lg:mb-16">
@@ -147,12 +147,12 @@ export default function ExportMarkets() {
               initial={{ opacity: 0, y: 16 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.15 + i * 0.07 }}
-              className="bg-white rounded-2xl p-5 border border-brand-border"
+              className="bg-gray-900 rounded-2xl p-5 border border-gray-800"
             >
-              <div className="font-heading font-bold text-3xl text-brand-text mb-0.5">
+              <div className="font-heading font-bold text-3xl text-white mb-0.5">
                 {stat.value}
               </div>
-              <div className="text-xs text-brand-muted">{stat.label}</div>
+              <div className="text-xs text-gray-400">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>
@@ -164,7 +164,7 @@ export default function ExportMarkets() {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ delay: 0.2, duration: 0.7 }}
-            className="relative bg-white rounded-3xl border border-brand-border p-8 overflow-hidden min-h-[360px] lg:min-h-[460px]"
+            className="relative bg-gray-900 rounded-3xl border border-gray-700 p-8 overflow-hidden min-h-[360px] lg:min-h-[460px]"
           >
             {/* Map background placeholder */}
             {/*
@@ -182,28 +182,22 @@ export default function ExportMarkets() {
               >
                 {/* Latitude lines */}
                 {[80, 140, 200, 260, 320].map((y) => (
-                  <line key={y} x1="0" y1={y} x2="800" y2={y} stroke="#E8E8E8" strokeWidth="1" />
+                  <line key={y} x1="0" y1={y} x2="800" y2={y} stroke="#333333" strokeWidth="1" />
                 ))}
                 {/* Longitude lines */}
                 {[100, 200, 300, 400, 500, 600, 700].map((x) => (
-                  <line key={x} x1={x} y1="0" x2={x} y2="400" stroke="#E8E8E8" strokeWidth="1" />
+                  <line key={x} x1={x} y1="0" x2={x} y2="400" stroke="#333333" strokeWidth="1" />
                 ))}
                 {/* Equator accent */}
-                <line x1="0" y1="200" x2="800" y2="200" stroke="#CCCCCC" strokeWidth="1.5" />
+                <line x1="0" y1="200" x2="800" y2="200" stroke="#555555" strokeWidth="1.5" />
 
-                {/* Continent silhouettes — simplified shapes */}
-                {/* North America */}
-                <path d="M 80 80 L 200 80 L 220 180 L 180 220 L 100 200 L 80 140 Z" fill="#F0F0F0" stroke="#E0E0E0" strokeWidth="1"/>
-                {/* South America */}
-                <path d="M 140 240 L 200 240 L 210 340 L 160 360 L 130 320 Z" fill="#F0F0F0" stroke="#E0E0E0" strokeWidth="1"/>
-                {/* Europe */}
-                <path d="M 360 60 L 440 60 L 450 140 L 380 160 L 350 120 Z" fill="#F0F0F0" stroke="#E0E0E0" strokeWidth="1"/>
-                {/* Africa */}
-                <path d="M 380 170 L 440 170 L 450 310 L 400 340 L 360 300 L 360 200 Z" fill="#F0F0F0" stroke="#E0E0E0" strokeWidth="1"/>
-                {/* Asia */}
-                <path d="M 460 50 L 680 60 L 700 180 L 620 220 L 500 200 L 450 140 Z" fill="#F0F0F0" stroke="#E0E0E0" strokeWidth="1"/>
-                {/* Australia */}
-                <path d="M 620 250 L 720 250 L 730 330 L 650 350 L 610 310 Z" fill="#F0F0F0" stroke="#E0E0E0" strokeWidth="1"/>
+                {/* Continent silhouettes */}
+                <path d="M 80 80 L 200 80 L 220 180 L 180 220 L 100 200 L 80 140 Z" fill="#2a2a2a" stroke="#444444" strokeWidth="1"/>
+                <path d="M 140 240 L 200 240 L 210 340 L 160 360 L 130 320 Z" fill="#2a2a2a" stroke="#444444" strokeWidth="1"/>
+                <path d="M 360 60 L 440 60 L 450 140 L 380 160 L 350 120 Z" fill="#2a2a2a" stroke="#444444" strokeWidth="1"/>
+                <path d="M 380 170 L 440 170 L 450 310 L 400 340 L 360 300 L 360 200 Z" fill="#2a2a2a" stroke="#444444" strokeWidth="1"/>
+                <path d="M 460 50 L 680 60 L 700 180 L 620 220 L 500 200 L 450 140 Z" fill="#2a2a2a" stroke="#444444" strokeWidth="1"/>
+                <path d="M 620 250 L 720 250 L 730 330 L 650 350 L 610 310 Z" fill="#2a2a2a" stroke="#444444" strokeWidth="1"/>
               </svg>
 
               {/* Animated region markers */}
@@ -238,7 +232,7 @@ export default function ExportMarkets() {
             </div>
 
             {/* Legend */}
-            <div className="absolute bottom-6 left-8 text-[10px] text-brand-muted">
+            <div className="absolute bottom-6 left-8 text-[10px] text-gray-400">
               <MapPin size={10} className="inline mr-1" />
               Click a region for details
             </div>
@@ -253,27 +247,27 @@ export default function ExportMarkets() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="bg-white rounded-2xl border border-brand-border p-6 mb-4"
+                className="bg-gray-900 rounded-2xl border border-gray-700 p-6 mb-4"
               >
                 <div className="flex items-center gap-2 mb-4">
                   <span
                     className="w-2.5 h-2.5 rounded-full"
                     style={{ background: active.color }}
                   />
-                  <h3 className="font-heading font-bold text-lg text-brand-text">
+                  <h3 className="font-heading font-bold text-lg text-white">
                     {active.label}
                   </h3>
-                  <span className="ml-auto text-xs text-brand-muted">{active.share} of exports</span>
+                  <span className="ml-auto text-xs text-gray-400">{active.share} of exports</span>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3 mb-4">
-                  <div className="text-center p-3 bg-brand-bg rounded-xl">
-                    <div className="font-heading font-bold text-xl text-brand-text">{active.value}</div>
-                    <div className="text-[10px] text-brand-muted">Export Value</div>
+                  <div className="text-center p-3 bg-gray-800 rounded-xl">
+                    <div className="font-heading font-bold text-xl text-white">{active.value}</div>
+                    <div className="text-[10px] text-gray-400">Export Value</div>
                   </div>
-                  <div className="text-center p-3 bg-brand-bg rounded-xl">
-                    <div className="font-heading font-bold text-xl text-brand-text">{active.buyers}</div>
-                    <div className="text-[10px] text-brand-muted">Buyers</div>
+                  <div className="text-center p-3 bg-gray-800 rounded-xl">
+                    <div className="font-heading font-bold text-xl text-white">{active.buyers}</div>
+                    <div className="text-[10px] text-gray-400">Buyers</div>
                   </div>
                   <div className="text-center p-3 rounded-xl" style={{ background: `${active.color}10` }}>
                     <div className="font-heading font-bold text-xl" style={{ color: active.color }}>
@@ -283,8 +277,8 @@ export default function ExportMarkets() {
                   </div>
                 </div>
 
-                <div className="text-xs text-brand-muted">
-                  <span className="font-medium">Key Markets: </span>
+                <div className="text-xs text-gray-400">
+                  <span className="font-medium text-gray-300">Key Markets: </span>
                   {active.countries.join(' · ')}
                 </div>
               </motion.div>
@@ -301,19 +295,19 @@ export default function ExportMarkets() {
                   transition={{ delay: 0.3 + i * 0.06 }}
                   className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all duration-300 ${
                     activeRegion === region.id
-                      ? 'border-brand-border bg-white shadow-luxury'
-                      : 'border-transparent hover:bg-white hover:border-brand-border'
+                      ? 'border-gray-700 bg-gray-900'
+                      : 'border-transparent hover:bg-gray-900 hover:border-gray-700'
                   }`}
                 >
                   <span
                     className="w-2 h-2 rounded-full shrink-0"
                     style={{ background: region.color }}
                   />
-                  <span className="text-sm font-medium text-brand-text flex-1 text-left">
+                  <span className="text-sm font-medium text-white flex-1 text-left">
                     {region.label}
                   </span>
-                  <span className="text-xs text-brand-muted">{region.share}</span>
-                  <TrendingUp size={11} className="text-brand-muted" />
+                  <span className="text-xs text-gray-400">{region.share}</span>
+                  <TrendingUp size={11} className="text-gray-500" />
                 </motion.button>
               ))}
             </div>

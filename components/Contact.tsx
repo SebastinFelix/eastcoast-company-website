@@ -3,46 +3,31 @@
 import { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import {
-  Mail,
-  Phone,
-  MapPin,
-  Send,
-  Upload,
-  CheckCircle2,
-  ArrowRight,
-  Linkedin,
-  Instagram,
-  Twitter,
+  Mail, Phone, MapPin, Send, Upload,
+  CheckCircle2, ArrowRight, Linkedin, Instagram, Twitter, AlertCircle,
+  Clock, Users, FileCheck,
 } from 'lucide-react';
+import { COMPANY } from '@/lib/config';
 
-// ─── CONTACT INFORMATION ──────────────────────────────────────────────────────
-// [COMPANY_INFO: Replace ALL contact details below with your actual information]
-const CONTACT_INFO = {
-  email: 'exports@yourcompany.com',       // [COMPANY_INFO: Your inquiry email]
-  phone: '+91 421 XXX XXXX',              // [COMPANY_INFO: Your phone number]
-  whatsapp: '+91 98XXX XXXXX',            // [COMPANY_INFO: Your WhatsApp number]
-  address: 'Your Full Address Here',      // [COMPANY_INFO: Your factory address]
-  city: 'Dindigul, Tamilnadu 624 001',    // [COMPANY_INFO: City, State, PIN]
-  country: 'India',                       // [COMPANY_INFO: Country]
-  linkedin: 'https://linkedin.com/in/yourcompany', // [COMPANY_INFO: LinkedIn URL]
-  instagram: 'https://instagram.com/yourcompany', // [COMPANY_INFO: Instagram URL]
-  twitter: 'https://twitter.com/yourcompany',     // [COMPANY_INFO: Twitter/X URL]
-};
+type Status = 'idle' | 'sending' | 'sent' | 'error';
 
-// [COMPANY_INFO: Update response time promise]
-const RESPONSE_PROMISE = 'We respond to all inquiries within 24 hours.';
+const inputBase =
+  'w-full border-2 border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium text-gray-900 bg-white placeholder-gray-400 caret-red-600 focus:outline-none focus:ring-0 focus:border-red-500 transition-all duration-200';
 
-const inputClass =
-  'w-full bg-white/8 border border-white/12 rounded-xl px-4 py-3.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-brand-accent/60 focus:bg-white/12 transition-all duration-300';
+const selectBase =
+  'w-full border-2 border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium text-gray-900 bg-white caret-red-600 focus:outline-none focus:ring-0 focus:border-red-500 transition-all duration-200 appearance-none cursor-pointer';
 
-const labelClass = 'block text-xs font-semibold tracking-wide text-white/50 mb-2 uppercase';
+const labelBase =
+  'block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide';
 
 export default function Contact() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
 
-  const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
+  const [status, setStatus] = useState<Status>('idle');
+  const [errorMsg, setErrorMsg] = useState('');
   const [fileName, setFileName] = useState<string | null>(null);
+  const [fileRef, setFileRef] = useState<File | null>(null);
 
   const [form, setForm] = useState({
     company: '',
@@ -57,394 +42,440 @@ export default function Contact() {
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-  };
+  ) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      setFileName(e.target.files[0].name);
-    }
+    const f = e.target.files?.[0] ?? null;
+    setFileRef(f);
+    setFileName(f ? f.name : null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('sending');
-
-    /*
-      [COMPANY_INFO: Implement your form submission logic here]
-      Options:
-        1. Formspree: action="https://formspree.io/f/YOUR_FORM_ID"
-        2. EmailJS: emailjs.sendForm(...)
-        3. Next.js API route: await fetch('/api/contact', { method: 'POST', body: JSON.stringify(form) })
-        4. Resend / SendGrid / Nodemailer via API route
-    */
-    await new Promise((r) => setTimeout(r, 1500)); // Simulated delay — remove in production
-    setStatus('sent');
+    setErrorMsg('');
+    try {
+      const data = new FormData();
+      Object.entries(form).forEach(([k, v]) => data.append(k, v));
+      if (fileRef) data.append('file', fileRef);
+      const res = await fetch('/api/contact', { method: 'POST', body: data });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? 'Something went wrong.');
+      setStatus('sent');
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : 'Failed to send. Please try again.');
+      setStatus('error');
+    }
   };
 
   return (
-    <section id="contact" className="section-padding bg-brand-dark overflow-hidden" ref={ref}>
+    <section id="contact" className="section-padding bg-[#F4F4F2] overflow-hidden" ref={ref}>
       <div className="container-brand">
-        {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          className="text-center mb-12 lg:mb-16"
-        >
-          <span className="inline-flex items-center gap-3 text-xs font-semibold tracking-[0.2em] uppercase text-white/30 mb-4">
-            <span className="w-6 h-px bg-brand-accent" />
-            Start a Partnership
-            <span className="w-6 h-px bg-brand-accent" />
-          </span>
-          <h2 className="font-heading text-[clamp(2rem,4vw,3.5rem)] font-bold text-white">
-            {/* [COMPANY_INFO: Update CTA headline] */}
-            Let's Build Something
-            <br />
-            <span className="text-white/40">Exceptional Together.</span>
-          </h2>
-        </motion.div>
 
-        {/* Split layout */}
-        <div className="grid lg:grid-cols-[420px_1fr] gap-8 lg:gap-12 items-start">
-          {/* Left: CTA panel */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ delay: 0.15, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="lg:sticky lg:top-28"
+        {/* ── Header ───────────────────────────────────────────────────────── */}
+        <div className="text-center mb-12 lg:mb-16">
+          <motion.span
+            initial={{ opacity: 0, y: 12 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            className="inline-flex items-center gap-3 text-xs font-semibold tracking-[0.2em] uppercase text-brand-muted mb-4"
           >
-            <div className="rounded-3xl bg-brand-accent/10 border border-brand-accent/20 p-8 mb-6">
-              <h3 className="font-heading font-bold text-2xl text-white mb-4">
-                {/* [COMPANY_INFO: Update panel headline] */}
-                Ready to Manufacture?
-              </h3>
-              <p className="text-sm text-white/60 leading-relaxed mb-8">
-                {/* [COMPANY_INFO: Update panel body text] */}
-                Share your requirements and we'll have a dedicated account manager reach out within 24 hours with samples, pricing, and a production timeline tailored to your brand.
-              </p>
+            <span className="w-6 h-px bg-brand-accent" />
+            Get In Touch
+            <span className="w-6 h-px bg-brand-accent" />
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.1, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="font-heading text-[clamp(2rem,4vw,3.25rem)] font-bold text-brand-text"
+          >
+            Request a Quote
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.2 }}
+            className="text-brand-muted text-base mt-3 max-w-lg mx-auto"
+          >
+            Fill in your requirements below and our team will respond within 24 hours with pricing, lead times, and samples.
+          </motion.p>
+        </div>
 
-              {/* What to expect */}
-              <div className="space-y-3 mb-8">
-                {[
-                  // [COMPANY_INFO: Update benefits list]
-                  'Free consultation & tech pack review',
-                  'Sample turnaround in 7–10 working days',
-                  'Dedicated account manager assigned',
-                  'Competitive per-unit pricing with volume tiers',
-                ].map((item) => (
-                  <div key={item} className="flex items-start gap-2.5">
-                    <CheckCircle2 size={14} className="text-brand-accent shrink-0 mt-0.5" />
-                    <span className="text-xs text-white/60">{item}</span>
+        {/* ── Main grid ────────────────────────────────────────────────────── */}
+        <div className="grid lg:grid-cols-[320px_1fr] gap-8 items-start">
+
+          {/* ── Left: Contact info sidebar ───────────────────────────────── */}
+          <motion.aside
+            initial={{ opacity: 0, x: -24 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ delay: 0.15, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:sticky lg:top-28 space-y-4"
+          >
+            {/* Company card */}
+            <div className="bg-brand-text text-white rounded-2xl p-6">
+              <div className="font-heading font-bold text-xl mb-1">
+                {COMPANY.name}<span className="text-brand-accent">.</span>
+              </div>
+              <div className="text-xs text-white/50 mb-6">{COMPANY.tagline}</div>
+
+              <div className="space-y-4">
+                <a href={`mailto:${COMPANY.email}`} className="flex items-start gap-3 group">
+                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0 group-hover:bg-brand-accent/30 transition-colors">
+                    <Mail size={14} className="text-white/70" />
                   </div>
+                  <div>
+                    <div className="text-[10px] text-white/40 uppercase tracking-widest mb-0.5">Email</div>
+                    <div className="text-sm text-white/80 group-hover:text-white transition-colors break-all">
+                      {COMPANY.email}
+                    </div>
+                  </div>
+                </a>
+
+                <a href={`tel:${COMPANY.phone.replace(/\s/g, '')}`} className="flex items-start gap-3 group">
+                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0 group-hover:bg-brand-accent/30 transition-colors">
+                    <Phone size={14} className="text-white/70" />
+                  </div>
+                  <div>
+                    <div className="text-[10px] text-white/40 uppercase tracking-widest mb-0.5">Phone</div>
+                    <div className="text-sm text-white/80 group-hover:text-white transition-colors">
+                      {COMPANY.phone}
+                    </div>
+                    <div className="text-xs text-white/40 mt-0.5">WhatsApp: {COMPANY.whatsapp}</div>
+                  </div>
+                </a>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+                    <MapPin size={14} className="text-white/70" />
+                  </div>
+                  <div>
+                    <div className="text-[10px] text-white/40 uppercase tracking-widest mb-0.5">Address</div>
+                    <address className="not-italic text-sm text-white/70 leading-relaxed">
+                      {COMPANY.address}<br />
+                      {COMPANY.cityLine}<br />
+                      {COMPANY.country}
+                    </address>
+                  </div>
+                </div>
+              </div>
+
+              {/* Socials */}
+              <div className="flex gap-2 mt-6 pt-5 border-t border-white/10">
+                {[
+                  { Icon: Linkedin,  href: COMPANY.social.linkedin,  label: 'LinkedIn' },
+                  { Icon: Instagram, href: COMPANY.social.instagram, label: 'Instagram' },
+                  { Icon: Twitter,   href: COMPANY.social.twitter,   label: 'Twitter' },
+                ].map(({ Icon, href, label }) => (
+                  <a key={label} href={href} target="_blank" rel="noopener noreferrer"
+                    aria-label={label}
+                    className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/50 hover:bg-brand-accent hover:text-white transition-all duration-300"
+                  >
+                    <Icon size={13} />
+                  </a>
                 ))}
               </div>
-
-              <a
-                href={`mailto:${CONTACT_INFO.email}`}
-                className="flex items-center gap-2 text-brand-accent text-sm font-semibold hover:gap-3 transition-all group"
-              >
-                <Mail size={14} />
-                {/* [COMPANY_INFO: Your email] */}
-                {CONTACT_INFO.email}
-                <ArrowRight size={12} className="ml-auto group-hover:translate-x-1 transition-transform" />
-              </a>
             </div>
 
-            {/* Contact details */}
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white/8 flex items-center justify-center text-white/50 shrink-0 mt-0.5">
-                  <Phone size={14} />
-                </div>
-                <div>
-                  <div className="text-[10px] font-semibold tracking-[0.12em] uppercase text-white/30 mb-0.5">Phone</div>
-                  <a href={`tel:${CONTACT_INFO.phone.replace(/\s/g, '')}`} className="text-sm text-white/70 hover:text-white transition-colors">
-                    {/* [COMPANY_INFO: Your phone] */}
-                    {CONTACT_INFO.phone}
-                  </a>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white/8 flex items-center justify-center text-white/50 shrink-0 mt-0.5">
-                  <MapPin size={14} />
-                </div>
-                <div>
-                  <div className="text-[10px] font-semibold tracking-[0.12em] uppercase text-white/30 mb-0.5">Address</div>
-                  {/* [COMPANY_INFO: Your address] */}
-                  <address className="not-italic text-sm text-white/70 leading-relaxed">
-                    {CONTACT_INFO.address}<br />
-                    {CONTACT_INFO.city}<br />
-                    {CONTACT_INFO.country}
-                  </address>
-                </div>
-              </div>
-            </div>
-
-            {/* Social links */}
-            <div className="flex gap-3 mt-8">
+            {/* Why us cards */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                What to Expect
+              </h4>
               {[
-                { Icon: Linkedin, href: CONTACT_INFO.linkedin, label: 'LinkedIn' },
-                { Icon: Instagram, href: CONTACT_INFO.instagram, label: 'Instagram' },
-                { Icon: Twitter, href: CONTACT_INFO.twitter, label: 'Twitter' },
-              ].map(({ Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  className="w-9 h-9 rounded-xl bg-white/8 border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/15 hover:border-white/20 transition-all duration-300"
-                >
-                  <Icon size={14} />
-                </a>
+                { Icon: Clock,     text: 'Response within 24 hours' },
+                { Icon: FileCheck, text: 'Free tech pack & consultation' },
+                { Icon: Users,     text: 'Dedicated account manager' },
+              ].map(({ Icon, text }) => (
+                <div key={text} className="flex items-center gap-3">
+                  <div className="w-7 h-7 rounded-lg bg-brand-accent/10 flex items-center justify-center shrink-0">
+                    <Icon size={13} className="text-brand-accent" />
+                  </div>
+                  <span className="text-sm text-gray-600">{text}</span>
+                </div>
               ))}
             </div>
-          </motion.div>
 
-          {/* Right: Contact form — glassmorphism */}
+            {/* Direct CTA */}
+            <a
+              href={`mailto:${COMPANY.email}`}
+              className="flex items-center justify-between gap-2 w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl hover:border-brand-accent hover:shadow-luxury transition-all duration-300 group"
+            >
+              <div>
+                <div className="text-xs text-gray-400 mb-0.5">Prefer email directly?</div>
+                <div className="text-sm font-semibold text-gray-900 group-hover:text-brand-accent transition-colors">
+                  {COMPANY.email}
+                </div>
+              </div>
+              <ArrowRight size={16} className="text-gray-300 group-hover:text-brand-accent group-hover:translate-x-1 transition-all" />
+            </a>
+          </motion.aside>
+
+          {/* ── Right: The Form ───────────────────────────────────────────── */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           >
             {status === 'sent' ? (
-              <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-sm p-12 text-center">
+              /* ── Success state ── */
+              <div className="bg-white rounded-3xl border border-gray-100 shadow-luxury p-12 text-center">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ type: 'spring', damping: 15, stiffness: 200 }}
-                  className="w-20 h-20 rounded-full bg-brand-accent/20 flex items-center justify-center mx-auto mb-6"
+                  transition={{ type: 'spring', damping: 14, stiffness: 180 }}
+                  className="w-20 h-20 rounded-full bg-green-50 border border-green-100 flex items-center justify-center mx-auto mb-6"
                 >
-                  <CheckCircle2 size={36} className="text-brand-accent" />
+                  <CheckCircle2 size={36} className="text-green-500" />
                 </motion.div>
-                <h3 className="font-heading font-bold text-2xl text-white mb-3">
+                <h3 className="font-heading font-bold text-2xl text-gray-900 mb-3">
                   Inquiry Received!
                 </h3>
-                <p className="text-white/50 text-sm leading-relaxed max-w-sm mx-auto">
-                  {/* [COMPANY_INFO: Update confirmation message] */}
-                  Thank you for reaching out. Your account manager will contact you within 24 hours to discuss your requirements.
+                <p className="text-gray-500 text-sm leading-relaxed max-w-sm mx-auto">
+                  Thank you for reaching out. Your account manager will contact you within 24 hours. A confirmation has been sent to your inbox.
                 </p>
                 <button
-                  onClick={() => setStatus('idle')}
-                  className="mt-8 text-xs font-semibold text-brand-accent hover:underline"
+                  onClick={() => {
+                    setStatus('idle');
+                    setForm({ company:'',name:'',email:'',phone:'',country:'',category:'',moq:'',requirements:'' });
+                    setFileName(null);
+                    setFileRef(null);
+                  }}
+                  className="mt-8 text-sm font-semibold text-brand-accent hover:underline"
                 >
-                  Submit another inquiry
+                  Submit another inquiry →
                 </button>
               </div>
             ) : (
+              /* ── Form ── */
               <form
                 onSubmit={handleSubmit}
-                className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-sm p-8 lg:p-10 space-y-6"
+                className="bg-white rounded-3xl border border-gray-100 shadow-luxury divide-y divide-gray-100"
               >
-                {/* Row 1 */}
-                <div className="grid sm:grid-cols-2 gap-4">
+                {/* Form header */}
+                <div className="px-8 py-5 flex items-center justify-between">
                   <div>
-                    <label className={labelClass} htmlFor="company">
-                      Company Name *
-                    </label>
-                    <input
-                      id="company"
-                      name="company"
-                      type="text"
-                      required
-                      placeholder="Your Brand / Company"
-                      value={form.company}
-                      onChange={handleChange}
-                      className={inputClass}
-                    />
+                    <h3 className="font-heading font-semibold text-base text-gray-900">
+                      Buyer Inquiry Form
+                    </h3>
+                    <p className="text-xs text-gray-400 mt-0.5">All fields marked * are required</p>
                   </div>
-                  <div>
-                    <label className={labelClass} htmlFor="name">
-                      Contact Name *
-                    </label>
-                    <input
-                      id="name"
-                      name="name"
-                      type="text"
-                      required
-                      placeholder="Full Name"
-                      value={form.name}
-                      onChange={handleChange}
-                      className={inputClass}
-                    />
+                  <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-medium text-green-600 bg-green-50 px-3 py-1.5 rounded-full border border-green-100">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                    Accepting Inquiries
                   </div>
                 </div>
 
-                {/* Row 2 */}
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelClass} htmlFor="email">
-                      Business Email *
-                    </label>
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      required
-                      placeholder="you@company.com"
-                      value={form.email}
-                      onChange={handleChange}
-                      className={inputClass}
-                    />
+                {/* Error banner */}
+                {status === 'error' && (
+                  <div className="mx-8 mt-4 flex items-start gap-3 p-4 rounded-xl bg-red-50 border border-red-200">
+                    <AlertCircle size={16} className="text-red-500 shrink-0 mt-0.5" />
+                    <p className="text-sm text-red-600">{errorMsg}</p>
                   </div>
-                  <div>
-                    <label className={labelClass} htmlFor="phone">
-                      Phone / WhatsApp
-                    </label>
-                    <input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      placeholder="+1 (555) 000-0000"
-                      value={form.phone}
-                      onChange={handleChange}
-                      className={inputClass}
-                    />
-                  </div>
-                </div>
+                )}
 
-                {/* Row 3 */}
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelClass} htmlFor="country">
-                      Country
-                    </label>
-                    <input
-                      id="country"
-                      name="country"
-                      type="text"
-                      placeholder="Your Country"
-                      value={form.country}
-                      onChange={handleChange}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label className={labelClass} htmlFor="category">
-                      Product Category *
-                    </label>
-                    {/* [COMPANY_INFO: Update categories to match your product range] */}
-                    <select
-                      id="category"
-                      name="category"
-                      required
-                      value={form.category}
-                      onChange={handleChange}
-                      className={`${inputClass} appearance-none cursor-pointer`}
-                    >
-                      <option value="" disabled>Select Category</option>
-                      <option value="menswear">Menswear</option>
-                      <option value="womenswear">Womenswear</option>
-                      <option value="kidswear">Kidswear</option>
-                      <option value="activewear">Activewear</option>
-                      <option value="sustainable">Sustainable / Organic</option>
-                      <option value="streetwear">Streetwear</option>
-                      <option value="basics">Fashion Basics</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                </div>
+                <div className="px-8 py-7 space-y-6">
 
-                {/* MOQ */}
-                <div>
-                  <label className={labelClass} htmlFor="moq">
-                    Estimated MOQ *
-                  </label>
-                  <select
-                    id="moq"
-                    name="moq"
-                    required
-                    value={form.moq}
-                    onChange={handleChange}
-                    className={`${inputClass} appearance-none cursor-pointer`}
-                  >
-                    <option value="" disabled>Select Order Quantity Range</option>
-                    {/* [COMPANY_INFO: Update MOQ tiers to match your minimums] */}
-                    <option value="100-300">100 – 300 pcs</option>
-                    <option value="300-1000">300 – 1,000 pcs</option>
-                    <option value="1000-5000">1,000 – 5,000 pcs</option>
-                    <option value="5000-25000">5,000 – 25,000 pcs</option>
-                    <option value="25000+">25,000+ pcs</option>
-                  </select>
-                </div>
-
-                {/* Requirements */}
-                <div>
-                  <label className={labelClass} htmlFor="requirements">
-                    Product Requirements *
-                  </label>
-                  <textarea
-                    id="requirements"
-                    name="requirements"
-                    required
-                    rows={4}
-                    placeholder="Describe your garment specifications, fabric preferences, certifications needed, delivery timeline, target markets..."
-                    value={form.requirements}
-                    onChange={handleChange}
-                    className={`${inputClass} resize-none`}
-                  />
-                </div>
-
-                {/* File upload */}
-                <div>
-                  <label className={labelClass}>
-                    Attach Tech Pack / Sketch (Optional)
-                  </label>
-                  <label className="flex items-center gap-3 cursor-pointer p-4 border border-dashed border-white/15 rounded-xl hover:border-white/30 hover:bg-white/5 transition-all duration-300 group">
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept=".pdf,.jpg,.jpeg,.png,.ai,.sketch,.fig"
-                      onChange={handleFile}
-                    />
-                    <div className="w-8 h-8 rounded-lg bg-white/8 flex items-center justify-center text-white/40 group-hover:text-white/60 transition-colors shrink-0">
-                      <Upload size={14} />
+                  {/* Row 1 — Company + Name */}
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    <div>
+                      <label className={labelBase} htmlFor="company">
+                        Company Name <span className="text-brand-accent">*</span>
+                      </label>
+                      <input
+                        id="company" name="company" type="text" required
+                        placeholder="Your Brand or Company"
+                        value={form.company} onChange={handleChange}
+                        className={inputBase}
+                      />
                     </div>
                     <div>
-                      <div className="text-xs font-medium text-white/50 group-hover:text-white/70 transition-colors">
-                        {fileName ?? 'Upload tech pack, sketch, or reference image'}
-                      </div>
-                      <div className="text-[10px] text-white/25 mt-0.5">
-                        PDF, JPG, PNG, AI, Figma · Max 10MB
+                      <label className={labelBase} htmlFor="name">
+                        Contact Person <span className="text-brand-accent">*</span>
+                      </label>
+                      <input
+                        id="name" name="name" type="text" required
+                        placeholder="Your Full Name"
+                        value={form.name} onChange={handleChange}
+                        className={inputBase}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Row 2 — Email + Phone */}
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    <div>
+                      <label className={labelBase} htmlFor="email">
+                        Business Email <span className="text-brand-accent">*</span>
+                      </label>
+                      <input
+                        id="email" name="email" type="email" required
+                        placeholder="you@company.com"
+                        value={form.email} onChange={handleChange}
+                        className={inputBase}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelBase} htmlFor="phone">Phone / WhatsApp</label>
+                      <input
+                        id="phone" name="phone" type="tel"
+                        placeholder="+1 (555) 000-0000"
+                        value={form.phone} onChange={handleChange}
+                        className={inputBase}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Row 3 — Country + Category */}
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    <div>
+                      <label className={labelBase} htmlFor="country">Country</label>
+                      <input
+                        id="country" name="country" type="text"
+                        placeholder="Your Country"
+                        value={form.country} onChange={handleChange}
+                        className={inputBase}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelBase} htmlFor="category">
+                        Product Category <span className="text-brand-accent">*</span>
+                      </label>
+                      <div className="relative">
+                        <select
+                          id="category" name="category" required
+                          value={form.category} onChange={handleChange}
+                          className={selectBase}
+                        >
+                          <option value="" disabled style={{ color: '#9ca3af', background: '#fff' }}>Select a category</option>
+                          {['Menswear','Womenswear','Kidswear','Activewear','Sustainable / Organic','Streetwear','Fashion Basics','Other'].map(o => (
+                            <option key={o} value={o} style={{ color: '#111111', background: '#ffffff', fontWeight: '500' }}>{o}</option>
+                          ))}
+                        </select>
+                        <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                            <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                  </label>
+                  </div>
+
+                  {/* Row 4 — MOQ */}
+                  <div>
+                    <label className={labelBase} htmlFor="moq">
+                      Estimated Order Quantity <span className="text-brand-accent">*</span>
+                    </label>
+                    <div className="relative">
+                      <select
+                        id="moq" name="moq" required
+                        value={form.moq} onChange={handleChange}
+                        className={selectBase}
+                      >
+                        <option value="" disabled style={{ color: '#9ca3af', background: '#fff' }}>Select quantity range</option>
+                        {['100 – 300 pcs','300 – 1,000 pcs','1,000 – 5,000 pcs','5,000 – 25,000 pcs','25,000+ pcs'].map(o => (
+                          <option key={o} value={o} style={{ color: '#111111', background: '#ffffff', fontWeight: '500' }}>{o}</option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                          <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 5 — Requirements */}
+                  <div>
+                    <label className={labelBase} htmlFor="requirements">
+                      Product Requirements <span className="text-brand-accent">*</span>
+                    </label>
+                    <textarea
+                      id="requirements" name="requirements" required rows={5}
+                      placeholder="Describe your garment specifications, fabric type, certifications needed, delivery timeline, target markets, colours, and any other details..."
+                      value={form.requirements} onChange={handleChange}
+                      className={`${inputBase} resize-none`}
+                    />
+                  </div>
+
+                  {/* Row 6 — File upload */}
+                  <div>
+                    <label className={labelBase}>
+                      Attach Tech Pack / Sketch
+                      <span className="ml-1 text-gray-300 normal-case font-normal">(optional)</span>
+                    </label>
+                    <label
+                      className={`flex items-center gap-4 p-4 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-300 ${
+                        fileName
+                          ? 'border-brand-accent/40 bg-brand-accent/5'
+                          : 'border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100'
+                      }`}
+                    >
+                      <input
+                        type="file" className="hidden"
+                        accept=".pdf,.jpg,.jpeg,.png,.ai,.zip,.fig"
+                        onChange={handleFile}
+                      />
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                        fileName ? 'bg-brand-accent/15 text-brand-accent' : 'bg-gray-200 text-gray-400'
+                      }`}>
+                        <Upload size={16} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className={`text-sm font-medium truncate ${fileName ? 'text-brand-accent' : 'text-gray-500'}`}>
+                          {fileName ?? 'Click to upload or drag & drop'}
+                        </div>
+                        <div className="text-xs text-gray-400 mt-0.5">
+                          PDF, JPG, PNG, AI, ZIP · Max 10MB
+                        </div>
+                      </div>
+                      {fileName && (
+                        <button
+                          type="button"
+                          onClick={(e) => { e.preventDefault(); setFileName(null); setFileRef(null); }}
+                          className="text-gray-300 hover:text-gray-500 shrink-0 text-lg leading-none"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </label>
+                  </div>
+
+                  {/* Privacy note */}
+                  <p className="text-xs text-gray-400 leading-relaxed">
+                    By submitting this form you agree to our Privacy Policy. Your information is used solely to respond to your inquiry and is never shared with third parties.
+                  </p>
                 </div>
 
-                {/* Privacy note */}
-                <p className="text-[10px] text-white/25 leading-relaxed">
-                  {/* [COMPANY_INFO: Update privacy policy link] */}
-                  By submitting, you agree to our Privacy Policy. Your information is used solely for responding to your inquiry and will never be shared with third parties.
-                </p>
-
-                {/* Submit */}
-                <motion.button
-                  type="submit"
-                  disabled={status === 'sending'}
-                  whileHover={{ scale: status === 'idle' ? 1.02 : 1 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full flex items-center justify-center gap-3 py-4 bg-brand-accent text-white font-semibold rounded-xl hover:bg-[#b01e2e] disabled:opacity-70 transition-all duration-300"
-                >
-                  {status === 'sending' ? (
-                    <>
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                        className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
-                      />
-                      Sending Inquiry...
-                    </>
-                  ) : (
-                    <>
-                      Send Inquiry
-                      <Send size={15} />
-                    </>
-                  )}
-                </motion.button>
-
-                <p className="text-center text-[11px] text-white/30">{RESPONSE_PROMISE}</p>
+                {/* Form footer — submit */}
+                <div className="px-8 py-5 bg-gray-50 rounded-b-3xl flex flex-col sm:flex-row items-center gap-4">
+                  <motion.button
+                    type="submit"
+                    disabled={status === 'sending'}
+                    whileHover={{ scale: status !== 'sending' ? 1.02 : 1 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex items-center justify-center gap-2.5 px-8 py-3.5 bg-brand-text text-white text-sm font-semibold rounded-xl hover:bg-brand-accent disabled:opacity-60 transition-all duration-300 w-full sm:w-auto"
+                  >
+                    {status === 'sending' ? (
+                      <>
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                          className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
+                        />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        Send Inquiry
+                        <Send size={14} />
+                      </>
+                    )}
+                  </motion.button>
+                  <p className="text-xs text-gray-400 text-center sm:text-left">
+                    <Clock size={11} className="inline mr-1" />
+                    We respond to all inquiries within 24 hours
+                  </p>
+                </div>
               </form>
             )}
           </motion.div>

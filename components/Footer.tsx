@@ -3,31 +3,10 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Linkedin,
-  Instagram,
-  Twitter,
-  Youtube,
-  ArrowUpRight,
-  Send,
-  MapPin,
-  Mail,
-  Phone,
+  Linkedin, Instagram, Twitter, Youtube,
+  ArrowUpRight, Send, MapPin, Mail, Phone,
 } from 'lucide-react';
-
-// ─── FOOTER CONTENT ───────────────────────────────────────────────────────────
-// [COMPANY_INFO: Replace ALL content below with your company information]
-
-const COMPANY_NAME = 'Eastcoast Company'; // [COMPANY_INFO: Your company name]
-const COMPANY_TAGLINE =
-  'Premium Apparel Manufacturing & Global Export'; // [COMPANY_INFO: Your tagline]
-const COMPANY_FOUNDING = '© 2024 Eastcoast Company Pvt. Ltd.'; // [COMPANY_INFO: Legal entity name + year]
-
-// [COMPANY_INFO: Update GST and IEC with your actual numbers]
-const COMPANY_REG = {
-  gst: 'GST: 33XXXXXXXXXXXXX',     // [COMPANY_INFO: Your GST number]
-  iec: 'IEC: XXXXXXXXXX',          // [COMPANY_INFO: Your Import Export Code]
-  cin: 'CIN: U17XXXXXXXX',         // [COMPANY_INFO: Your CIN (India) or equiv.]
-};
+import { COMPANY } from '@/lib/config';
 
 // [COMPANY_INFO: Update all navigation links]
 const footerLinks = {
@@ -57,30 +36,17 @@ const footerLinks = {
   ],
 };
 
-// [COMPANY_INFO: Update all contact details]
 const contactItems = [
-  {
-    Icon: MapPin,
-    text: 'Your Factory Address, City, State, PIN, India',  // [COMPANY_INFO: Address]
-  },
-  {
-    Icon: Mail,
-    text: 'exports@yourcompany.com',   // [COMPANY_INFO: Email]
-    href: 'mailto:exports@yourcompany.com',
-  },
-  {
-    Icon: Phone,
-    text: '+91 421 XXX XXXX',          // [COMPANY_INFO: Phone]
-    href: 'tel:+914210000000',
-  },
+  { Icon: MapPin, text: COMPANY.fullAddress },
+  { Icon: Mail,  text: COMPANY.email, href: `mailto:${COMPANY.email}` },
+  { Icon: Phone, text: COMPANY.phone, href: `tel:${COMPANY.phone.replace(/\s/g,'')}` },
 ];
 
-// [COMPANY_INFO: Update social media links]
 const socialLinks = [
-  { Icon: Linkedin, href: 'https://linkedin.com/company/yourcompany', label: 'LinkedIn' },
-  { Icon: Instagram, href: 'https://instagram.com/yourcompany', label: 'Instagram' },
-  { Icon: Twitter, href: 'https://twitter.com/yourcompany', label: 'Twitter' },
-  { Icon: Youtube, href: 'https://youtube.com/@yourcompany', label: 'YouTube' },
+  { Icon: Linkedin,  href: COMPANY.social.linkedin,  label: 'LinkedIn' },
+  { Icon: Instagram, href: COMPANY.social.instagram, label: 'Instagram' },
+  { Icon: Twitter,   href: COMPANY.social.twitter,   label: 'Twitter' },
+  { Icon: Youtube,   href: COMPANY.social.youtube,   label: 'YouTube' },
 ];
 
 // [COMPANY_INFO: Update certification badges to match your actual certs]
@@ -138,10 +104,10 @@ export default function Footer() {
             {/* Brand column */}
             <div className="col-span-2 lg:col-span-1">
               <div className="font-heading font-bold text-2xl mb-3">
-                {COMPANY_NAME}<span className="text-brand-accent">.</span>
+                {COMPANY.name}<span className="text-brand-accent">.</span>
               </div>
               <p className="text-xs text-white/40 leading-relaxed mb-6 max-w-[220px]">
-                {COMPANY_TAGLINE}
+                {COMPANY.tagline}
               </p>
 
               {/* Contact items */}
@@ -221,8 +187,8 @@ export default function Footer() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="your@email.com"
-                    className="w-full bg-white/8 border border-white/12 rounded-xl px-4 py-3 text-xs text-white placeholder-white/25 focus:outline-none focus:border-brand-accent/50 transition-all"
+                    placeholder="Enter your email address"
+                    className="w-full bg-white rounded-xl px-4 py-3 text-xs text-gray-900 font-medium placeholder-gray-400 border-2 border-gray-200 focus:outline-none focus:border-brand-accent caret-red-600 transition-all"
                   />
                   <button
                     type="submit"
@@ -260,15 +226,13 @@ export default function Footer() {
         <div className="container-brand py-5">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="text-[11px] text-white/25">
-              {/* [COMPANY_INFO: Update legal entity and year] */}
-              {COMPANY_FOUNDING} · All Rights Reserved
+              © {new Date().getFullYear()} {COMPANY.legalName} · All Rights Reserved
             </div>
 
             <div className="flex flex-wrap gap-4 text-[11px] text-white/25">
-              {/* [COMPANY_INFO: Update registration numbers] */}
-              <span>{COMPANY_REG.gst}</span>
-              <span>{COMPANY_REG.iec}</span>
-              <span>{COMPANY_REG.cin}</span>
+              <span>{COMPANY.reg.gst}</span>
+              <span>{COMPANY.reg.iec}</span>
+              <span>{COMPANY.reg.cin}</span>
             </div>
 
             <div className="flex gap-4 text-[11px] text-white/25">

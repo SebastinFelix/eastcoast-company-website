@@ -29,17 +29,17 @@ const row2 = clientLogos.slice(6);
 
 function LogoCard({ client }: { client: (typeof clientLogos)[0] }) {
   return (
-    <div className="shrink-0 mx-5 flex items-center justify-center w-[160px] h-[72px] bg-white border border-brand-border rounded-xl grayscale hover:grayscale-0 hover:border-brand-accent/30 hover:shadow-luxury transition-all duration-400 cursor-default group">
+    <div className="shrink-0 mx-5 flex items-center justify-center w-[160px] h-[72px] bg-gray-900 border border-gray-700 rounded-xl hover:border-brand-accent/60 hover:shadow-luxury transition-all duration-400 cursor-default group">
       {/*
         [REPLACE_IMAGE: Replace initials block with actual logo image]
         import Image from 'next/image';
         <Image src={client.logoPath} alt={client.name} width={100} height={40} className="object-contain opacity-40 group-hover:opacity-100 transition-opacity" />
       */}
       <div className="flex flex-col items-center gap-0.5">
-        <div className="font-heading font-bold text-xl text-brand-light group-hover:text-brand-accent transition-colors">
+        <div className="font-heading font-bold text-xl text-gray-400 group-hover:text-brand-accent transition-colors">
           {client.initials}
         </div>
-        <div className="text-[9px] font-medium text-brand-light/60 tracking-widest uppercase group-hover:text-brand-muted transition-colors">
+        <div className="text-[9px] font-medium text-gray-600 tracking-widest uppercase group-hover:text-gray-300 transition-colors">
           {client.name}
         </div>
       </div>
@@ -84,8 +84,8 @@ export default function Clients() {
         {/* Row 1 — forward */}
         <div className="relative">
           {/* Fade masks */}
-          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-brand-bg to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-brand-bg to-transparent z-10 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
 
           <div className="marquee-track">
             {[...row1, ...row1].map((client, i) => (
@@ -96,8 +96,8 @@ export default function Clients() {
 
         {/* Row 2 — reverse */}
         <div className="relative">
-          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-brand-bg to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-brand-bg to-transparent z-10 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
 
           <div className="marquee-track-reverse">
             {[...row2, ...row2].map((client, i) => (

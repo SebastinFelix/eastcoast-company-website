@@ -120,13 +120,13 @@ export default function Infrastructure() {
               initial={{ opacity: 0, y: 16 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.1 + i * 0.07 }}
-              className="bg-white rounded-2xl p-5 border border-brand-border shadow-luxury"
+              className="bg-gray-900 rounded-2xl p-5 border border-gray-800"
             >
-              <div className="font-heading font-bold text-3xl text-brand-text mb-0.5">
+              <div className="font-heading font-bold text-3xl text-white mb-0.5">
                 {stat.value}
-                <span className="text-brand-muted text-xl">{stat.unit}</span>
+                <span className="text-gray-400 text-xl">{stat.unit}</span>
               </div>
-              <div className="text-xs text-brand-muted font-medium tracking-wide">{stat.label}</div>
+              <div className="text-xs text-gray-400 font-medium tracking-wide">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>
