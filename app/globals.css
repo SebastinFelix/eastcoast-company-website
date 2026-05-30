@@ -1,0 +1,196 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── ROOT VARIABLES ──────────────────────────────────────────────────────── */
+:root {
+  --brand-bg: #F8F8F8;
+  --brand-text: #111111;
+  --brand-accent: #D72638;
+  --brand-gold: #C19A6B;
+  --brand-muted: #666666;
+  --brand-dark: #0A0A0A;
+}
+
+/* ─── BASE STYLES ─────────────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  background-color: var(--brand-bg);
+  color: var(--brand-text);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ─── TYPOGRAPHY ──────────────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+/* ─── SELECTION ───────────────────────────────────────────────────────────── */
+::selection {
+  background-color: #111111;
+  color: #ffffff;
+}
+
+/* ─── SCROLLBAR ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #F8F8F8;
+}
+::-webkit-scrollbar-thumb {
+  background: #CCCCCC;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #111111;
+}
+
+/* ─── UTILITY CLASSES ─────────────────────────────────────────────────────── */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .mask-gradient-right {
+    mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  }
+
+  .clip-path-diagonal {
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+  }
+
+  /* Glassmorphism */
+  .glass {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .glass-dark {
+    background: rgba(10, 10, 10, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Image hover zoom container */
+  .img-zoom-container {
+    overflow: hidden;
+  }
+  .img-zoom-container:hover .img-zoom-target {
+    transform: scale(1.08);
+  }
+  .img-zoom-target {
+    transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Magnetic button base */
+  .btn-magnetic {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  .btn-magnetic::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.4s cubic-bezier(0.76, 0, 0.24, 1);
+    opacity: 0.1;
+    z-index: 0;
+  }
+  .btn-magnetic:hover::before {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+/* ─── MARQUEE ANIMATIONS ──────────────────────────────────────────────────── */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+.marquee-track-reverse {
+  display: flex;
+  width: max-content;
+  animation: marqueeReverse 35s linear infinite;
+}
+
+/* ─── IMAGE PLACEHOLDER STYLES ────────────────────────────────────────────── */
+/* Used as fallback until real images are added */
+.placeholder-hero {
+  background: linear-gradient(135deg, #0A0A0A 0%, #1a1a1a 50%, #0f0f0f 100%);
+}
+.placeholder-fashion {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+}
+.placeholder-light {
+  background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%);
+}
+
+/* ─── SECTION SPACING ─────────────────────────────────────────────────────── */
+.section-padding {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+@media (min-width: 1024px) {
+  .section-padding {
+    padding-top: 9rem;
+    padding-bottom: 9rem;
+  }
+}
+
+/* ─── CONTAINER ───────────────────────────────────────────────────────────── */
+.container-brand {
+  width: 100%;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+@media (min-width: 768px) {
+  .container-brand {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+@media (min-width: 1200px) {
+  .container-brand {
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
+}
+
+/* ─── HOVER LIFT EFFECT ───────────────────────────────────────────────────── */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+}
